@@ -13,7 +13,7 @@
     />
 
     <!-- Fonts and icons -->
-    <script src="asset('assets/js/plugin/webfont/webfont.min.js')}}"></script>
+    <script src="{{asset('assets/js/plugin/webfont/webfont.min.js')}}"></script>
     <script>
       WebFont.load({
         google: { families: ["Public Sans:300,400,500,600,700"] },
@@ -24,7 +24,7 @@
             "Font Awesome 5 Brands",
             "simple-line-icons",
           ],
-          urls: ["asset('assets/css/fonts.min.css')}}"],
+          urls: ["{{asset('assets/css/fonts.min.css')}}"],
         },
         active: function () {
           sessionStorage.fonts = true;
@@ -86,14 +86,24 @@
       <!-- End Sidebar -->
 
       <div class="main-panel">
-        <div class="container">
+        @if(Session('success'))
+        <div class="btn btn-success" style="float: right; margin:10px " id="sucDiv">
+            {{ Session('success') }}
+        </div>
+        @endif 
+        @error('mainLink')
+        <div class="btn btn-danger" style="float: right; margin:10px " id="sucDiv">
+            This URL can not be shortened !!
+        </div>
+        @enderror
+        <div class="container">                     
           <div class="page-inner">  
             <div class="card">
                 <div class="card-body">
                     <form action="{{ url('generateLink') }}" method="POST">
                         @csrf
                         <div class="form-group">
-                            <label for="url">Enter URL</label>
+                            <label>Enter URL</label>
                             <input
                               type="text"
                               name="mainLink"
@@ -101,7 +111,7 @@
                               required
                             />
                             <br>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" type="submit">
                                 <span class="btn-label">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </span>
@@ -115,7 +125,7 @@
                 <div class="col-md-12">
                     <div class="card">
                       <div class="card-header">
-                        <h4 class="card-title">Basic</h4>
+                        <h4 class="card-title">All Links</h4>
                       </div>
                       <div class="card-body">
                         <div class="table-responsive">
@@ -126,23 +136,30 @@
                             <thead>
                               <tr>
                                 <th>S.N.</th>
-                                <th>Main Link</th>
+                                <th style="max-width:250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Main Link</th>
                                 <th>Short Link</th>
+                                <th>Action</th>
                               </tr>
                             </thead>
                             <tfoot>
                               <tr>
                                 <th>S.N.</th>
-                                <th>Main Link</th>
+                                <th style="max-width:250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Main Link</th>
                                 <th>Short Link</th>
+                                <th>Action</th>
                               </tr>
                             </tfoot>
                             <tbody>
-                              <tr>
-                                <td>1</td>
-                                <td>2</td>
-                                <td>3</td>
-                              </tr>
+                                @if (isset($shortLinks))
+                                    @foreach ($shortLinks as $row)
+                                    <tr>
+                                        <td>{{$row->id}}</td>
+                                        <td style="max-width:250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="{{$row->mainLink}}" target="_blank">{{$row->mainLink}}</a></td>
+                                        <td><a href="{{$row->mainLink}}" target="_blank">{{$row->shortLink}}</a></td>
+                                        <td><a href="{{ url('delete',$row->id)}}" class="btn btn-danger btn-sm" id="alert_demo_3_3">Delete</a></td>
+                                    </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                           </table>
                         </div>
@@ -207,6 +224,17 @@
             $("#addRowModal").modal("hide");
           });
         });
+        $("#alert_demo_3_3").click(function (e) {
+            swal("Deleted!", {
+              icon: "success",
+              buttons: {
+                confirm: {
+                  className: "btn btn-success",
+                },
+              },
+            });
+        });
+        $('#sucDiv').delay(2000).fadeOut('slow');
       </script>
   </body>
 </html>

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('short_links', function (Blueprint $table) {
             $table->id();
-            $table->string('mainLink');
-            $table->string('shortLink');
+            $table->longText('mainLink');
+            $table->longText('shortLink');
             $table->timestamps();
         });
     }
